@@ -1,0 +1,405 @@
+<!DOCTYPE html><html><head><base href="https://api.websim.io/VideoGameTodoList/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purple Quest Todo List</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #2a0a4a;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .game-container {
+    background-color: rgba(65, 25, 113, 0.8);
+    border: 4px solid #8a2be2;
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 0 20px #8a2be2;
+  }
+
+  h1 {
+    text-align: center;
+    color: #d8bfd8;
+    text-shadow: 2px 2px #4b0082;
+    margin-bottom: 30px;
+  }
+
+  .input-container {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  #todo-input {
+    flex-grow: 1;
+    background-color: rgba(75, 0, 130, 0.8);
+    border: 2px solid #8a2be2;
+    color: #fff;
+    padding: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+  }
+
+  #add-btn {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  #add-btn:hover {
+    background-color: #9932cc;
+    transform: scale(1.05);
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  li {
+    background-color: rgba(75, 0, 130, 0.8);
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid #4b0082;
+    transition: all 0.3s ease;
+  }
+
+  li:hover {
+    border-color: #8a2be2;
+    transform: translateX(5px);
+  }
+
+  .completed {
+    text-decoration: line-through;
+    color: #b19cd9;
+  }
+
+  .task-btn {
+    background-color: #8a2be2;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    margin-left: 5px;
+  }
+
+  .task-btn:hover {
+    background-color: #9932cc;
+    transform: scale(1.1);
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: rgba(75, 0, 130, 0.8);
+    border: 2px solid #8a2be2;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress {
+    width: 0%;
+    height: 100%;
+    background-color: #8a2be2;
+    transition: width 0.5s ease-in-out;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 12px;
+    text-shadow: 1px 1px #000;
+  }
+
+  .level {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #d8bfd8;
+  }
+
+  #reset-btn {
+    display: block;
+    margin: 20px auto 0;
+    background-color: #4b0082;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  #reset-btn:hover {
+    background-color: #6a0dad;
+    transform: scale(1.05);
+  }
+
+  .level-up {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(75, 0, 130, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  .level-up.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .level-up h2 {
+    font-size: 48px;
+    color: #d8bfd8;
+    text-shadow: 3px 3px #4b0082;
+    margin-bottom: 20px;
+  }
+
+  .level-up p {
+    font-size: 24px;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="game-container">
+  <h1>Miwel Quest</h1>
+  <div class="input-container">
+    <input type="text" id="todo-input" placeholder="Enter new quest...">
+    <button id="add-btn">Add</button>
+  </div>
+  <ul id="todo-list"></ul>
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+    <div class="progress-text" id="progress-text">0%</div>
+  </div>
+  <div class="level" id="level">Level 1</div>
+  <button id="reset-btn">Reset to Level 1</button>
+</div>
+
+<div class="level-up" id="level-up">
+  <h2>Level Up!</h2>
+  <p>You've reached a new level!</p>
+</div>
+
+<script>
+const todoInput = document.getElementById('todo-input');
+const addBtn = document.getElementById('add-btn');
+const todoList = document.getElementById('todo-list');
+const progressBar = document.getElementById('progress');
+const progressText = document.getElementById('progress-text');
+const levelText = document.getElementById('level');
+const resetBtn = document.getElementById('reset-btn');
+const levelUpScreen = document.getElementById('level-up');
+
+let currentLevel = 1;
+let currentProgress = 0;
+
+addBtn.addEventListener('click', addTodo);
+todoInput.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    addTodo();
+  }
+});
+resetBtn.addEventListener('click', resetLevel);
+
+function addTodo() {
+  const todoText = todoInput.value.trim();
+  if (todoText) {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${todoText}</span>
+      <div>
+        <button class="task-btn complete-btn">✓</button>
+        <button class="task-btn delete-btn">✗</button>
+      </div>
+    `;
+    li.querySelector('.complete-btn').addEventListener('click', completeTask);
+    li.querySelector('.delete-btn').addEventListener('click', deleteTask);
+    todoList.appendChild(li);
+    todoInput.value = '';
+    playSound('https://api.websim.io/VideoGameTodoList/add.mp3');
+  }
+}
+
+function completeTask(e) {
+  const listItem = e.target.closest('li');
+  listItem.classList.toggle('completed');
+  playSound('https://api.websim.io/VideoGameTodoList/complete.mp3');
+  
+  if (listItem.classList.contains('completed')) {
+    updateProgress(5);
+  } else {
+    updateProgress(-5);
+  }
+}
+
+function deleteTask(e) {
+  const listItem = e.target.closest('li');
+  if (listItem.classList.contains('completed')) {
+    updateProgress(-5);
+  }
+  listItem.remove();
+  playSound('https://api.websim.io/VideoGameTodoList/delete.mp3');
+}
+
+function updateProgress(amount) {
+  currentProgress += amount;
+  if (currentProgress < 0) currentProgress = 0;
+  if (currentProgress >= 100) {
+    levelUp();
+  } else {
+    progressBar.style.width = `${currentProgress}%`;
+    progressText.textContent = `${currentProgress}%`;
+  }
+}
+
+function levelUp() {
+  currentLevel++;
+  currentProgress = 0;
+  levelText.textContent = `Level ${currentLevel}`;
+  progressBar.style.width = '0%';
+  progressText.textContent = '0%';
+  
+  levelUpScreen.classList.add('show');
+  playSound('https://api.websim.io/VideoGameTodoList/levelup.mp3');
+  
+  setTimeout(() => {
+    levelUpScreen.classList.remove('show');
+  }, 3000);
+}
+
+function resetLevel() {
+  currentLevel = 1;
+  currentProgress = 0;
+  levelText.textContent = `Level ${currentLevel}`;
+  progressBar.style.width = '0%';
+  progressText.textContent = '0%';
+  todoList.innerHTML = '';
+  playSound('https://api.websim.io/VideoGameTodoList/reset.mp3');
+}
+
+function playSound(url) {
+  const audio = new Audio(url);
+  audio.play();
+}
+
+// Particle effect
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+canvas.style.position = 'fixed';
+canvas.style.top = '0';
+canvas.style.left = '0';
+canvas.style.width = '100%';
+canvas.style.height = '100%';
+canvas.style.pointerEvents = 'none';
+canvas.style.zIndex = '-1';
+
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 3 + 1;
+    this.speedX = Math.random() * 3 - 1.5;
+    this.speedY = Math.random() * 3 - 1.5;
+    this.color = `hsl(${Math.random() * 60 + 240}, 100%, 50%)`;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if (this.size > 0.2) this.size -= 0.1;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+const particles = [];
+
+function handleParticles() {
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+
+    if (particles[i].size <= 0.2) {
+      particles.splice(i, 1);
+      i--;
+    }
+  }
+
+  if (particles.length < 100) {
+    particles.push(new Particle());
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  handleParticles();
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+// Background music
+const bgMusic = new Audio('https://api.websim.io/VideoGameTodoList/background_music.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.3;
+
+document.body.addEventListener('click', () => {
+  bgMusic.play();
+});
+</script>
+
+</body></html>
